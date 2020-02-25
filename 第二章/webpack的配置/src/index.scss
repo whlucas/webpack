@@ -1,0 +1,39 @@
+body {
+    .avatar {
+        width: 150px;
+        height: 150px;
+        transform: translate(100px, 100px);
+    }
+}
+
+@font-face {
+    font-family: "iconfont";
+    src: url('./font/iconfont.eot?t=1582534993274');
+    /* IE9 */
+    src: url('./font/iconfont.eot?t=1582534993274#iefix') format('embedded-opentype'),
+        /* IE6-IE8 */
+        url('data:application/x-font-woff2;charset=utf-8;base64,d09GMgABAAAAAAOIAAsAAAAAB9gAAAM7AAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHEIGVgCDBgqDRIMOATYCJAMMCwgABCAFhG0HNBvSBhHVm7HIfhzkpsnrzJmRv3409j14wLq3l0n6d5opzRVwk3mEcSSvDYDNzVgKoyIUS3IePD98RwI7vTT8+J/L6d3VtsDmtyzHOaYd9QKMAwpob2yTFUgBcUvtIg4MXvnF0xCAJogEREVVQ0dMFGiSAMTIYUP6YdYMqJFygYnA1rNSIZZjh2ksMO4Ay+TnxRfShAkGdhI0s2Vw5UBK3n95/0NOb5vekyMIt7MB3jqQQAKgQPTudXRF6kQCEp0o1Hi+DYXA2Crc1iYFqcp20T+eAcIGKnUAIMZMGvD+C+VBwPsfF2AAIAGwAU7ASuC4SfLoZ8OMUg4OSjk6mvs6KPspiw74duqSWLNmA6w/E6HRwsHoofeeE2LGJu+65IGvbjpkjXPCefSiPRumr9+t9x6ccWhAuai7Q0fnzmgxxFh/RuuFSxrORzvvOQvT67l+sqPGGkALhi8662s4bLrkvOX49GmnJ086PnvW+fnzwTuffjD94aLHMx6dOO/xf3zj/fKoo4k3Prvc1unH/RtyGn42ZDcELO/od9vl1Y3Ec+VRxv79/3vKzmtvrI1fY+Xt9NqVZzE4fPBzHOIq9DiHm/xqJzQ9dt26p+h+EZ+HY6X7XwhID7jgn3487rgTtRhWfAHph51n8mF1FQO9b5XTvTvllHfvVi6wrVs3IXzdul8tAo22Pz92UOvg1s6tnegLGis3GxcAZGfj2f/7De87fdzdx7ngn2kpAF5NO9kqdQqYC8y7cwr4W0Jgk0rFyChVLKCCPC2pw3wXxWg08I8qAdx4t1zlCWaAUHmWYNCOQJCYRKCKlAB2WGSADZNi0MRTvd7CnfFIhLIH4phjgMCFY2DgxHmQuHAXVaS3YIcX38CGi5Cg6Szcd7SIEsN0uSZoFD3YP6yOLyJmLVX5hPN9GKmKJfONEtcwtFXTTI94oWwxJ37mTpWAhE8YjPPwOBiC8IZOq0U19HVNfS+qHJ9JmZQLGkUP9g+r44t4ey1b759wvg8jI7gJ/xslrt1DWzUAdFRcINyrXBI/c6dKQMInDIYND5xgCP3DNnRaLQtioa+tVgRVVMerzufbAegEHSLTLM3TIlHmVs7NcSQJAA==') format('woff2'),
+        url('./font/iconfont.woff?t=1582534993274') format('woff'),
+        url('./font/iconfont.ttf?t=1582534993274') format('truetype'),
+        /* chrome, firefox, opera, Safari, Android, iOS 4.2+ */
+        url('./font/iconfont.svg?t=1582534993274#iconfont') format('svg');
+    /* iOS 4.1- */
+}
+
+.iconfont {
+    font-family: "iconfont" !important;
+    font-size: 16px;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+
+// 这里就是它提供给我的类名,但首先他的有一个iconfont类
+.iconauto:before {
+    content: "\e6eb";
+}
+
+.iconall:before {
+    content: "\e6ef";
+}

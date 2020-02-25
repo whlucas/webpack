@@ -1,0 +1,37 @@
+// 这个里面的代码就是webpack.loader里面配置es6里面的options:后面的对象
+// 注意这个里面全都要写成json格式,不然会报错
+{
+    // 为了让@babel/polyfill不要去引入太多不必要的东西
+    // 需要在这给@babel/preset-env加上配置,先把他放到数组里面,然后在第二项上面写配置
+    "presets": [
+        // 他这个里面的执行顺序是从下往上的顺序,先执行react的,再执行es6转es5的代码
+        ["@babel/preset-env", {
+        // 他表示我去做@babel/polyfill填充的时候,不要全部都填进来,按需加载
+        // 加了这个就不用去import "@babel/polyfill了
+            "useBuiltIns": "usage",
+            "corejs": "2", // 写上面的那一个配置,就要写我这个的配置
+            "targets": {
+                "chrome": "67"  // 我这个项目是运行在大于67版本的chrome浏览器的,我希望依据按照这个浏览器版本来进行es6代码的编译
+            }
+        }],
+        // 我现在想要打包react代码,找到webpack官网的presets里面的react点开
+        // 安装一下npm install --save-dev @babel/preset-react
+        ["@babel/preset-react"]
+    ]
+
+    // 如果写业务代码,用上面的方式来打包
+    // 如果我要写库文件,那么用下面的方式,因为上面的方式会给你引入import "@babel/polyfill,会对全局变量进行污染,下面这种方式不会污染
+    // 去官网的doc去找transform-runtime
+    // npm install --save-dev @babel/plugin-transform-runtime
+    // npm install --save @babel/runtime
+    // "plugins": [
+    //     ["@babel/plugin-transform-runtime", {
+    //         "absoluteRuntime": false,
+    //         "corejs": 2, // 这里写哪个就要去装哪个包,去官网的transform-runtime下面搜关键字corejs这里安装npm install --save @babel/runtime-corejs2
+    //         "helpers": true,
+    //         "regenerator": true,
+    //         "useESModules": false,
+    //         "version": "7.0.0-beta.0"
+    //     }]
+    // ]
+}
