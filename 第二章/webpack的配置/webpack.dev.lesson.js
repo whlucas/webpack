@@ -1,3 +1,5 @@
+// 这个是开发模式的打包配置
+
 const path = require("path")
 
 // 插件需要引入
@@ -8,7 +10,6 @@ module.exports = {
 
     // 打包的环境默认是production,这个环境下代码会被压缩
     // 还有一个环境是development, 这个开发环境代码没有被压缩
-    // 如果要用
     mode: 'development',
 
     // sourceMap
@@ -177,6 +178,15 @@ module.exports = {
             template: './src/index.html'
         }),
         // 这个插件帮我们在打包之前把上一次打包的文件夹删了,注意引入的时候要解构的方式引入
+        // 这个插件会默认我这个配置文件的所在目录是根目录,没有上级目录
+        // 这里传一个数组,表示我要删除的文件夹,后面跟一个配置对象,里面配置我的根目录
+        // 当然这都是建立在我配置文件没有在根目录的情况下,如果在根目录就不用这么写了
+        // new CleanWebpackPlugin([
+        //     'dist'
+        // ], {
+        //     // 表示这个项目的根目录是当前配置文件目录的上级目录
+        //     root: path.resolve(__dirname, '../')
+        // }),
         new CleanWebpackPlugin(),
 
         // 在插件里面加上热模块更新(HMR)的插件
@@ -184,13 +194,32 @@ module.exports = {
         new webpack.HotModuleReplacementPlugin()
     ],
 
+    // Tree Shaking (没有用的东西都从树上晃掉)
+    // 注意Tree Shaking支持ES6的引入方式,ES6是静态引入,commonjs是动态的就支持不了
+    // 我引入一个模块,但我只用了一个模块里面的一个方法
+    // 那么我没有引入的东西你就别给我打包了
+
+    // 注意开发环境默认是没有打开tree shaking的,需要我手动打开
+    // 1.写下面的配置
+    // 2.写package.json里面的配置"sideEffects": false,
+    // 配置这个是为了如果是import "@babel/polyfill"这种引入,就是没有明确些那些东西被使用,他就会直接给你忽略了,如果不想让他忽略,就配置成这样"sideEffects": ["@babel/polyfill"],
+    // "sideEffects": false 配置成这样就是没有特殊要处理的东西,如果碰到import "@babel/polyfill"这种引入就直接全部忽略这个包里面的东西
+    // 但是一般都要求他略过所有的.css文件就得这么写"sideEffects": ["*.css"]
+    // 在开发环境下,他还是不会给你把没有引入的东西去掉,因为怕报错提示出问题,但是在生产环境中他会帮你把他们去掉
+
+    // 在生产环境下
+    // tree shaking 自动帮你打开,但还是配置一下下面的东西,告诉他package.json里面的sideEffects里面要去找不做tree shaking的文件
+    optimization: {
+        usedExports: true  // 看一看哪一个模块被使用了,使用就打包
+    },
+
 
     output: {   // 打包出口
         // filename: "bundle.js",  // 打包后的文件名
 
         // 所有的打包出来的文件互相的引用前面都加一个根路径
-        // 确保不会出错
-        publicPath: "/",
+        // 这个可能会出错
+        // publicPath: "/",
 
         // 这里我想要打包出来多个文件,用占位符处理
         // name只的是entry中配置的key值
@@ -198,6 +227,8 @@ module.exports = {
         filename: "[name].js",  // 打包后的文件名
 
         // 打包后的文件放在哪个文件夹下,这里必须要传一个绝对路径bundle是文件名
+        // 这个位置是表示和配置文件同级的目录,如果想要把打包后的文件夹放到配置文件的上级目录
+        // 就可以"../dist"
         path: path.resolve(__dirname, "dist") ,
 
         // 我希望我的插件帮我引入到html里面的script标签上的src属性的时候,前面就带一些网址网址,因为我的前端文件是要传到cdn上面的,但是不希望文件名上面有地址

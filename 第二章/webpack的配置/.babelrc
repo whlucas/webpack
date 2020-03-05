@@ -17,7 +17,9 @@
         // 我现在想要打包react代码,找到webpack官网的presets里面的react点开
         // 安装一下npm install --save-dev @babel/preset-react
         ["@babel/preset-react"]
-    ]
+    ],
+    // 配置可支持异步引入模块
+    "plugins": ["@babel/plugin-syntax-dynamic-import"]
 
     // 如果写业务代码,用上面的方式来打包
     // 如果我要写库文件,那么用下面的方式,因为上面的方式会给你引入import "@babel/polyfill,会对全局变量进行污染,下面这种方式不会污染
