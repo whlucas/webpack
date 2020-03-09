@@ -4,6 +4,7 @@ const merge = require("webpack-merge")
 const commonConfig = require("./webpack.common")
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const WorkboxPlugin = require('workbox-webpack-plugin')
 
 const prodConfig = {
 
@@ -61,6 +62,15 @@ const prodConfig = {
         new MiniCssExtractPlugin({
             filename: '[name].css', // 如果这个css被html直接引用就会用上面的命名,
             chunkFilename: '[name].chunk.css'
+        }),
+
+        // PWA serviceWorker
+        // 为了让线上的代码在服务器挂掉的时候浏览器能有缓存,这里引入这个插件
+        // SW就是serviceWorker
+        // 还要在index里面加一些代码
+        new WorkboxPlugin.GenerateSW({
+            clientsClaim: true,
+            skipWaiting: true
         })
     ],
 

@@ -1,0 +1,25 @@
+{
+    "compilerOptions": { // 配置编译选项
+        "target": "es2016", // 这里默认编译出来的es3,node环境支持es7了,所以可以改为es2016,
+        "module": "commonjs", // 配置编译目标的模块化标准,因为是node环境所以这里是commonjs,也可以写成es6
+        "lib": ["es2016"], // 默认会有一个"dom",表示这个是浏览器环境,不加这个dom,就是把这个默认的浏览器环境去掉,但把这个去掉就会缺少一些例如console.log之类的东西,但这个里面不支持写一个"node"
+        // 所以要用一个@type/node的库,有了个这个库把"dom"去掉也一样可以在node环境中正常使用
+        "outDir": "./dist", // 编译结果放在哪
+        "strictNullChecks": true, // 这个表示更加严格的空类型检查,加了这个之后null和undefined就不能赋值给其他类型了,
+        "removeComments": true, // 编译的结果里面不包含注释
+        "noImplicitUseStrict": true, // 编译结果中不包含"use strict"
+        "esModuleInterop": true, // 在node环境用es6导入,避免报错
+        "noEmitOnError": true, // 报错时不产生编译结果
+        "moduleResolution": "node", // 使用node的方式来进行模块解析
+        "strictPropertyInitialization": true, // 在class的熟悉初始化定义的时候更加的严格,写了属性列表就必须给他一个值,要么是默认值要么是在constructor里面定义
+        "noImplicitAny": true, // 开启对隐式any的检查,就是通过推导计算得到的一个不存在的值,他就会给你赋值为隐式的any类型,但是这个配置开启了之后,就不能自己给你赋值为隐式的any类型,会报错
+        "noImplicitThis": true, // 表示this隐式的被推断出any,也就是this要有明确的指向
+        "experimentalDecorators": true, // 使用装饰器需要配置这个,要不然用不了
+        "emitDecoratorMetadata": true, // 启用这个,如果安装了reflect-metadata这个库,并且导入了该库,并且在某个成员上添加了元数据,并且启用了一个配置,则ts在编译结果中,会将约束的类型作为元数据加入相应的位置
+        "typeRoots": ["./node_modules/@types", "./src"], // 写申明文件存放的地方,写了之后node_modules/@types这了里面的文件失效,因为会到这个配置的地方去找,当然可以都给写上
+        "declaration": true, // build的时候就会给你生成对应的申明文件
+        "sourceMap": true, // 源码地图,报错的时候给你对应到ts文件中
+    },
+    "include": ["./src"], // 默认的tsc命令是编译全部工程里面ts文件,我这里配置他之编译更目录下的src文件夹里面的文件
+    // "files": ["./src/index.ts"] // 只让他编辑一个文件
+}

@@ -51,8 +51,21 @@ module.exports = {
                     },
                     // 我加载一个js文件的时候想让他的this指向window(之前this是指向模块自身)
                     // 下载一个imports-loader,然后像下面这么配置,注意这个要写在下面,先用这个loader来处理
+                    // {
+                    //     loader: 'imports-loader?this=>window'
+                    // },
+
+                    // 加入eslint
+                    // 加入这个会影响打包速度
+                    // 配合devServer那里的配置overlay: true
+                    // 出现问题它会在浏览器弹出来一个东西提示我,这样编辑器失效了他也会通过浏览器来检查
                     {
-                        loader: 'imports-loader?this=>window'
+                        loader: 'eslint-loader',
+                        options: {
+                            fix: true,  // 自动帮你修复简单的问题
+                            // 自己去官网看规则  loaders-eslint-loader
+                        },
+                        force: 'pre', // 配置这个之后,这个loader的顺序不管放在那就是第一个使用的
                     }
                 ]
             }
@@ -76,10 +89,10 @@ module.exports = {
 
         // shimming垫片
         // 这是webpack自带的一个插件
-        new webpack.ProvidePlugin({
-            $: 'jquery',  // 如果你看到我的代码里面有$这个符号,你就给我把jquery引入了,给这个引入的jquery模块名引入叫$
-            _join: ['lodash', 'join']   // 引入lodash库里面的join方法,起名叫_join
-        })
+        // new webpack.ProvidePlugin({
+        //     $: 'jquery',  // 如果你看到我的代码里面有$这个符号,你就给我把jquery引入了,给这个引入的jquery模块名引入叫$
+        //     _join: ['lodash', 'join']   // 引入lodash库里面的join方法,起名叫_join
+        // })
     ],
 
     // 配置代码分割
@@ -125,9 +138,9 @@ module.exports = {
         },
         // 为了兼容老版本,这里防止如果代码没有修改两次打包出来额hash值不同的问题
         // 这里加一个配置,将业务和库代码的关系单独抽离出来形成一个文件(manifest),防止老版本在打包的时候将业务和库代码的关系代码发生变化,导致hash值变化
-        runtimeChunk: {
-            name: 'runtime',
-        }
+        // runtimeChunk: {
+        //     name: 'runtime',
+        // }
     },
     // performance: false,  // 需不需要提示性能上的问题
     output: {

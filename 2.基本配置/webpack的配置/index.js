@@ -168,8 +168,47 @@
 
 // 浏览器缓存
 
-import _ from 'lodash';
-// import $ from 'jquery'  // 这里可以在配置里用垫片来引入这个模块
-const dom = $('<div>')
-dom.html(_.join(['dell', 'lee'], ' '))
-$('body').append(dom)
+// import _ from 'lodash';
+// // import $ from 'jquery'  // 这里可以在配置里用垫片来引入这个模块
+// const dom = $('<div>')
+// dom.html(_.join(['dell', 'lee'], ' '))
+// $('body').append(dom)
+
+
+// PWA serviceWorker
+// 为了让线上的代码在服务器挂掉的时候浏览器能有缓存你访问过的网页
+// 需要在webpack.prod.js里面配置一个插件
+// 还要在这里写逻辑
+
+// 如果浏览器支持serviceWorker
+// if ("serviceWorker" in navigator){
+//     // 当加载完成之后去注册一下serviceWorker
+//     window.addEventListener('load', () => {
+//         navigator.serviceWorker.register('/service-worker.js').then(registration => {
+//             console.log("service-worker registed")
+//         }).catch(error => {
+//             console.log("service-worker registed error")
+//         })
+//     })
+// }
+// console.log(111)
+
+
+// webpack-dev-server实现请求转发
+// 去看dev.config里面的配置
+import React, { Component } from 'react'
+import ReactDom from 'react-dom'
+import axios from 'axios'
+
+class App extends Component {
+    componentDidMount() {
+        axios.get('/react/api/header.json').then((res) => {
+            console.log(res);
+        })
+    }
+    render() {
+        return <div>Hello Word</div>;
+    }
+}
+
+ReactDom.render(<App />, document.getElementById('root'))
