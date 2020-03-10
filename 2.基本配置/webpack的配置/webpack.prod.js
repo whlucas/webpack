@@ -68,6 +68,7 @@ const prodConfig = {
         // 为了让线上的代码在服务器挂掉的时候浏览器能有缓存,这里引入这个插件
         // SW就是serviceWorker
         // 还要在index里面加一些代码
+        // 打包后会多出来service-worker.js 和 workbox.js
         new WorkboxPlugin.GenerateSW({
             clientsClaim: true,
             skipWaiting: true

@@ -212,3 +212,24 @@ class App extends Component {
 }
 
 ReactDom.render(<App />, document.getElementById('root'))
+
+
+
+// 优化
+// 目标第三方模块只打包一次
+// 先去写一个配置文件webpack.dll.js
+// 把引入的第三方库代码单独打包,并把打包后的东西用一个变量暴露出去,把打包好的文件给他引入到html里面
+// npm run build:dll 先打包一次, 生成两个个文件,一个主js文件,一个映射文件
+// 我要往HtmlWebpackPlugin生成的html里面加入一些内容
+// 用这个插件 add-asset-html-webpack-plugin
+// new AddAssetHtmlWebpackPlugin({
+//     filepath: path.resolve(__dirname, "./dll/vendors.dll.js")
+// }),
+
+// 再来一个插件
+// 效果是不用去改index.js里面的引入,自己让他自己去从我打包出来的vendors.dll.js里面找
+// 通过我引人的那个全局变量,和我打包库代码(build:dll)的时候生成的vendors.manifest.json这个文件,来让我的主js文件知道,我用到库代码里面的东西的时候就去我的vendors.dll.js这个文件里面去找,
+// 如果找到了就不用再打包了,直接从全局变量里面拿过来用了
+// new webpack.DllReferencePlugin({
+//     manifest: path.resolve(__dirname, "./dll/vendors.manifest.json"),
+// })

@@ -1,17 +1,68 @@
 // 这里是共用的代码
 
 const path = require("path")
+const fs = require('fs')
 
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 const { CleanWebpackPlugin } = require("clean-webpack-plugin")
 
+const AddAssetHtmlWebpackPlugin = require("add-asset-html-webpack-plugin")
+
 const webpack = require('webpack');
 
+// 这个里面放基础的plugin,下面动态添加一些插件
+const plugins = [
+    new HtmlWebpackPlugin({
+        template: './src/index.html',
+        filename: 'index.html', // 起个名字
+        // chunks: ['defaultVendors', 'main', ]  // 想让这个生成的html引入什么这里就添加什么,这里只有多页面打包的时候会配置,因为会有多个html模板,一般不用也,他自己会给你引入
+        // 如果是多个html可以根据打包的入口文件有几个,向上面那样动态生成多个我这个 HtmlWebpackPlugin插件,直接些个函数传入我下面的大的config对象
+        // Object.keys(configs.entry).forEach(item => {})
+    }),
+    new CleanWebpackPlugin(),
+]
+
+// 通过node来分析dll文件夹里面有什么文件,就动态的添加对应的插件
+// files是dll文件里面的文件名放到一个数组里面
+const files = fs.readdirSync(path.resolve(__dirname, './dll'))
+files.forEach(file => {
+    // 如果是.dll.js结尾的就往上面的数组里面push AddAssetHtmlWebpackPlugin这个插件
+    if(/.*\.dll.js/.test(file)){
+        plugins.push(
+            new AddAssetHtmlWebpackPlugin({
+                filepath: path.resolve(__dirname, "./dll", file)
+            }),
+        )
+    }
+    if (/.*\.manifest.json/.test(file)) {
+        plugins.push(
+            new webpack.DllReferencePlugin({
+                manifest: path.resolve(__dirname, "./dll", file),
+            }),
+        )
+    }
+})
 module.exports = {
     entry: {
         // 这个是做手动代码分割的时候用的,用插件做就不用这样了
         // lodash: './lodash.js',
         main: './index.js'
+    },
+    resolve: {
+        // 当我引入目录下的模块的时候,我会先去找该名称下的.js文件,再去找.jsx文件
+        // 比如import Child from './child/child'
+        // 这样引入就不用写.js或者.jsx了
+        extensions: [".js", ".jsx"],
+        // 只写一个目录import Child from './child/'
+        // 他默认引入什么文件,这里先去找index,然后再去找叫child的文件,一般不会写,默认它会帮你写一个index
+        mainFiles: ['index', 'child'],
+        // 别名,通过引入alias来引入指定的东西
+        // import Child from 'alias'
+        alias: {
+            // 他指向一个目录,然后通过这个目录去找这个目录下的默认文件
+            // 可以对深层次目录下的文件起一个别名
+            delllee: path.resolve(__dirname, '../src/a/b/c/child')
+        }
     },
     module: {
         rules: [
@@ -41,7 +92,9 @@ module.exports = {
             },
 
             {
-                test: /\.js$/,
+                test: /\.jsx?$/,  // 问号表示x可有可无
+                // 只打包src下面的代码
+                // include: path.resolve(__dirname, './src'),
                 exclude: /node_modules/,
                 // loader: "babel-loader",
                 // 如果要使用多个loader,要用use
@@ -65,17 +118,17 @@ module.exports = {
                             fix: true,  // 自动帮你修复简单的问题
                             // 自己去官网看规则  loaders-eslint-loader
                         },
-                        force: 'pre', // 配置这个之后,这个loader的顺序不管放在那就是第一个使用的
-                    }
+                        // force: 'pre', // 配置这个之后,这个loader的顺序不管放在那就是第一个使用的,但是报错了
+                    },
                 ]
             }
         ]
     },
     plugins: [
-        new HtmlWebpackPlugin({
-            template: './src/index.html'
-        }),
-        new CleanWebpackPlugin(),
+        // new HtmlWebpackPlugin({
+        //     template: './src/index.html'
+        // }),
+        // new CleanWebpackPlugin(),
 
         // HMR在prod中是不需要的
         // new webpack.HotModuleReplacementPlugin()
@@ -93,6 +146,35 @@ module.exports = {
         //     $: 'jquery',  // 如果你看到我的代码里面有$这个符号,你就给我把jquery引入了,给这个引入的jquery模块名引入叫$
         //     _join: ['lodash', 'join']   // 引入lodash库里面的join方法,起名叫_join
         // })
+
+        // 优化
+        // 目标第三方模块值打包一次
+        // 先去写一个配置文件webpack.dll.js
+        // 把引入的第三方库代码单独打包,并把打包后的东西用一个变量暴露出去,把打包好的文件给他引入到html里面
+        // npm run build:dll 先打包一次, 生成两个个文件,一个主js文件,一个映射文件
+        // 我要往HtmlWebpackPlugin生成的html里面加入一些内容
+        // 用这个插件 add-asset-html-webpack-plugin
+        // new AddAssetHtmlWebpackPlugin({
+        //     filepath: path.resolve(__dirname, "./dll/vendors.dll.js")
+        // }),
+        // new AddAssetHtmlWebpackPlugin({
+        //     filepath: path.resolve(__dirname, "./dll/react.dll.js")
+        // }),
+
+        // 再来一个插件
+        // 效果是不用去改index.js里面的引入,自己让他自己去从我打包出来的vendors.dll.js里面找
+        // 通过我引人的那个全局变量,和我打包库代码(build:dll)的时候生成的vendors.manifest.json这个文件,来让我的主js文件知道,我用到库代码里面的东西的时候就去我的vendors.dll.js这个文件里面去找,
+        // 如果找到了就不用再打包了,直接从全局变量里面拿过来用了
+        // new webpack.DllReferencePlugin({
+        //     manifest: path.resolve(__dirname, "./dll/vendors.manifest.json"),
+        // }),
+        // new webpack.DllReferencePlugin({
+        //     manifest: path.resolve(__dirname, "./dll/react.manifest.json"),
+        // }),
+        
+        // 如果dll里面有很多文件,写起来会很麻烦,这里我动态添加这里面的插件
+        // 直接放入我添加好的东西
+        ...plugins
     ],
 
     // 配置代码分割
