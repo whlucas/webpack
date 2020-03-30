@@ -1,4 +1,4 @@
-// 这个里面的代码就是webpack.loader里面配置es6里面的options:后面的对象
+// 这个里面的代码就是webpack.moudle.rule里面的babel-loader里面配置es6里面的options:后面的对象
 // 注意这个里面全都要写成json格式,不然会报错
 {
     // 为了让@babel/polyfill不要去引入太多不必要的东西

@@ -1,3 +1,5 @@
+// 用于自动化测试可删
+
 'use strict';
 
 const path = require('path');

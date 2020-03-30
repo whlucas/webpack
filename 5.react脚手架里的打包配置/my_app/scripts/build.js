@@ -1,17 +1,23 @@
 'use strict';
 
 // Do this as the first thing so that any code reading it knows the right env.
+// 定义环境变量
 process.env.BABEL_ENV = 'production';
 process.env.NODE_ENV = 'production';
 
 // Makes the script crash on unhandled rejections instead of silently
 // ignoring them. In the future, promise rejections that are not handled will
 // terminate the Node.js process with a non-zero exit code.
+
+// 遇到异常要抛出
 process.on('unhandledRejection', err => {
   throw err;
 });
 
 // Ensure environment variables are read.
+
+// 引入配置文件
+// 对要用到的全局变量进行赋值
 require('../config/env');
 
 
@@ -44,6 +50,8 @@ if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
 }
 
 // Generate configuration
+// 得到打包要用的配置内容
+// 这个函数就是调用的webpack.config这个文件
 const config = configFactory('production');
 
 // We require that you explicitly set browsers and do not fall back to

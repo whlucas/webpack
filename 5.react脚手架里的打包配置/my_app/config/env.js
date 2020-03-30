@@ -1,3 +1,5 @@
+// 全局变量/环境变量的命名
+
 'use strict';
 
 const fs = require('fs');
@@ -5,8 +7,11 @@ const path = require('path');
 const paths = require('./paths');
 
 // Make sure that including paths.js after env.js will read .env variables.
+
+// 清除缓存
 delete require.cache[require.resolve('./paths')];
 
+// 判断有没有设置当前环境
 const NODE_ENV = process.env.NODE_ENV;
 if (!NODE_ENV) {
   throw new Error(
@@ -15,6 +20,8 @@ if (!NODE_ENV) {
 }
 
 // https://github.com/bkeepers/dotenv#what-other-env-files-can-i-use
+
+// 挂载一些环境变量?
 const dotenvFiles = [
   `${paths.dotenv}.${NODE_ENV}.local`,
   `${paths.dotenv}.${NODE_ENV}`,
@@ -60,6 +67,7 @@ process.env.NODE_PATH = (process.env.NODE_PATH || '')
 // injected into the application via DefinePlugin in webpack configuration.
 const REACT_APP = /^REACT_APP_/i;
 
+// 整理全局变量的函数
 function getClientEnvironment(publicUrl) {
   const raw = Object.keys(process.env)
     .filter(key => REACT_APP.test(key))

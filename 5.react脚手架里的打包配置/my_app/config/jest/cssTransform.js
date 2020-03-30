@@ -1,3 +1,5 @@
+// 用于自动化测试可删
+
 'use strict';
 
 // This is a custom Jest transformer turning style imports into empty objects.

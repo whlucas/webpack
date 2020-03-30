@@ -1,3 +1,5 @@
+// 这里面是一些路径,在webpack.config.js里面可以直接调用
+
 'use strict';
 
 const path = require('path');

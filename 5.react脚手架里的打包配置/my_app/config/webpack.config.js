@@ -1,3 +1,5 @@
+// 核心的配置文件
+
 'use strict';
 
 const fs = require('fs');
@@ -127,11 +129,12 @@ module.exports = function(webpackEnv) {
   };
 
   return {
+    // 设置模式
     mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
     // Stop compilation early in production
-    bail: isEnvProduction,
-    devtool: isEnvProduction
-      ? shouldUseSourceMap
+    bail: isEnvProduction,  // 遇到错误就停止
+    devtool: isEnvProduction  // 判断环境
+      ? shouldUseSourceMap // 判断是否要使用source-map
         ? 'source-map'
         : false
       : isEnvDevelopment && 'cheap-module-source-map',
@@ -148,22 +151,24 @@ module.exports = function(webpackEnv) {
       // the line below with these two lines if you prefer the stock client:
       // require.resolve('webpack-dev-server/client') + '?/',
       // require.resolve('webpack/hot/dev-server'),
+      // 解决模块热更新可能的问题,开发环境才会用
       isEnvDevelopment &&
         require.resolve('react-dev-utils/webpackHotDevClient'),
       // Finally, this is your app's code:
-      paths.appIndexJs,
+      paths.appIndexJs, // 去paths.js里面找,发现指向src下面的index.js文件
       // We include the app code last so that if there is a runtime error during
       // initialization, it doesn't blow up the WebpackDevServer client, and
       // changing JS code would still trigger a refresh.
     ].filter(Boolean),
     output: {
       // The build folder.
+      // 去paths.js里面找就能找到对应的路径
       path: isEnvProduction ? paths.appBuild : undefined,
       // Add /* filename */ comments to generated require()s in the output.
-      pathinfo: isEnvDevelopment,
+      pathinfo: isEnvDevelopment, // 输出一些注释信息
       // There will be one main bundle, and one file per asynchronous chunk.
       // In development, it does not produce real files.
-      filename: isEnvProduction
+      filename: isEnvProduction   
         ? 'static/js/[name].[contenthash:8].js'
         : isEnvDevelopment && 'static/js/bundle.js',
       // TODO: remove this when upgrading to webpack 5
@@ -177,6 +182,7 @@ module.exports = function(webpackEnv) {
       // We inferred the "public path" (such as / or /my-project) from homepage.
       publicPath: paths.publicUrlOrPath,
       // Point sourcemap entries to original disk location (format as URL on Windows)
+      // 帮助调错,解决sourcemap定位不准的问题
       devtoolModuleFilenameTemplate: isEnvProduction
         ? info =>
             path
@@ -192,7 +198,9 @@ module.exports = function(webpackEnv) {
       globalObject: 'this',
     },
     optimization: {
+      // 压不压缩取决于环境
       minimize: isEnvProduction,
+      // 对js文件进行压缩
       minimizer: [
         // This is only used in production mode
         new TerserPlugin({
@@ -258,6 +266,7 @@ module.exports = function(webpackEnv) {
       // Automatically split vendor and commons
       // https://twitter.com/wSokra/status/969633336732905474
       // https://medium.com/webpack/webpack-4-code-splitting-chunk-graph-and-the-splitchunks-optimization-be739a861366
+      // 单独打包用的默认配置
       splitChunks: {
         chunks: 'all',
         name: false,
@@ -269,11 +278,13 @@ module.exports = function(webpackEnv) {
         name: entrypoint => `runtime-${entrypoint.name}`,
       },
     },
+    // 在引入模块的时候起作用
     resolve: {
       // This allows you to set a fallback for where webpack should look for modules.
       // We placed these paths second because we want `node_modules` to "win"
       // if there are any conflicts. This matches Node resolution mechanism.
       // https://github.com/facebook/create-react-app/issues/253
+      // 引入模块的时候去数组里面找
       modules: ['node_modules', paths.appNodeModules].concat(
         modules.additionalModulePaths || []
       ),
@@ -283,9 +294,11 @@ module.exports = function(webpackEnv) {
       // https://github.com/facebook/create-react-app/issues/290
       // `web` extension prefixes have been added for better support
       // for React Native Web.
+      // 讲过
       extensions: paths.moduleFileExtensions
         .map(ext => `.${ext}`)
         .filter(ext => useTypeScript || !ext.includes('ts')),
+      // 讲过
       alias: {
         // Support React Native Web
         // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
@@ -297,6 +310,7 @@ module.exports = function(webpackEnv) {
         }),
         ...(modules.webpackAliases || {}),
       },
+      // 这个里面也可以写插件
       plugins: [
         // Adds support for installing with Plug'n'Play, leading to faster installs and adding
         // guards against forgotten dependencies and such.
@@ -309,6 +323,7 @@ module.exports = function(webpackEnv) {
         new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson]),
       ],
     },
+    // 只有去引入loader的时候才会执行
     resolveLoader: {
       plugins: [
         // Also related to Plug'n'Play, but this time it tells webpack to load its loaders
@@ -317,9 +332,11 @@ module.exports = function(webpackEnv) {
       ],
     },
     module: {
+      // 引入模块比如明确导入内容
       strictExportPresence: true,
       rules: [
         // Disable require.ensure as it's not a standard language feature.
+        // 异步代码加载不能用 requireEnsure,要用import
         { parser: { requireEnsure: false } },
 
         // First, run the linter.
@@ -329,6 +346,7 @@ module.exports = function(webpackEnv) {
           enforce: 'pre',
           use: [
             {
+              // ESLint
               options: {
                 cache: true,
                 formatter: require.resolve('react-dev-utils/eslintFormatter'),
@@ -345,6 +363,7 @@ module.exports = function(webpackEnv) {
           // "oneOf" will traverse all following loaders until one will
           // match the requirements. When no loader matches it will fall
           // back to the "file" loader at the end of the loader list.
+          // 数组里面去确定文件类型,找到一个可以用的{}里面的loader就停止了就不找了
           oneOf: [
             // "url" loader works like "file" loader except that it embeds assets
             // smaller than specified limit in bytes as data URLs to avoid requests.
@@ -361,6 +380,7 @@ module.exports = function(webpackEnv) {
             // The preset includes JSX, Flow, TypeScript, and some ESnext features.
             {
               test: /\.(js|mjs|jsx|ts|tsx)$/,
+              // 这个文件必须在指定的文件夹内
               include: paths.appSrc,
               loader: require.resolve('babel-loader'),
               options: {
@@ -488,6 +508,7 @@ module.exports = function(webpackEnv) {
             // In production, they would get copied to the `build` folder.
             // This loader doesn't use a "test" so it will catch all modules
             // that fall through the other loaders.
+            // 都没匹配上,就走这个file-loader
             {
               loader: require.resolve('file-loader'),
               // Exclude `js` files to keep "css" loader working as it injects
